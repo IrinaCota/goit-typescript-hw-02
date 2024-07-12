@@ -1,18 +1,20 @@
 import { BsSearch } from 'react-icons/bs';
 import toast, { Toaster } from 'react-hot-toast';
-import PropTypes from 'prop-types';
+import React from 'react';
 import css from './SearchBar.module.css';
+import { SearchBarProps } from './SearchBar.types';
 
-export default function SearchBar({ onSearch }) {
-  const handleSubmit = event => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const query = event.target.elements.searchQuery.value.trim();
+    const form = event.target as HTMLFormElement;
+    const query = (form.elements.namedItem('searchQuery') as HTMLInputElement).value.trim();
     if (query === '') {
       toast.error('Input cannot be empty!');
     } else {
       onSearch(query);
     }
-    event.target.reset();
+    form.reset();
   };
 
   return (
@@ -33,8 +35,6 @@ export default function SearchBar({ onSearch }) {
       </form>
     </header>
   );
-}
-
-SearchBar.propTypes = {
-  onSearch: PropTypes.func.isRequired,
 };
+
+export default SearchBar;
