@@ -1,7 +1,7 @@
-// ./App.js
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import fetchImages from '../API/unsplash-api-img';
+import { UnsplashImage, UnsplashResponse, ModalParams } from './App.types';
 import SearchBar from '../SearchBar/SearchBar';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import ImageGallery from '../ImageGallery/ImageGallery';
@@ -9,21 +9,21 @@ import ImageModal from '../ImageModal/ImageModal';
 import LoadMoreBtn from '../LoadMoreBtn/LoadMoreBtn';
 import Loader from '../Loader/Loader';
 
-const initialModalParams = {
+const initialModalParams: ModalParams = {
   isOpen: false,
   url: '',
   description: '',
 };
 
 function App() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [images, setImages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [page, setPage] = useState(1);
-  const [showLoadMoreBtn, setShowLoadMoreBtn] = useState(false);
-  const [modalParams, setModalParams] = useState(initialModalParams);
-  const appRef = useRef();
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [images, setImages] = useState<UnsplashImage[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [showLoadMoreBtn, setShowLoadMoreBtn] = useState<boolean>(false);
+  const [modalParams, setModalParams] = useState<ModalParams>(initialModalParams);
+  const appRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (searchQuery === '') return;
@@ -32,10 +32,9 @@ function App() {
       try {
         setIsLoading(true);
         setIsError(false);
-        const { results, total_pages } = await fetchImages(searchQuery, page);
-        console.log('Results', results);
-        setImages(prevImages => [...prevImages, ...results]);
-        setShowLoadMoreBtn(page < total_pages);
+        const data: UnsplashResponse = await fetchImages(searchQuery, page);
+        setImages(prevImages => [...prevImages, ...data.results]);
+        setShowLoadMoreBtn(page < data.total_pages);
       } catch (error) {
         console.error('Error fetching images:', error);
         setIsError(true);
@@ -47,7 +46,7 @@ function App() {
     getData();
   }, [searchQuery, page]);
 
-  const handleSearch = newQuery => {
+  const handleSearch = (newQuery: string) => {
     setSearchQuery(newQuery);
     setPage(1);
     setImages([]);
@@ -57,8 +56,8 @@ function App() {
     setPage(prevPage => prevPage + 1);
   };
 
-  const handleImageClick = ({ urls: { regular }, alt_description }) => {
-    setModalParams({ isOpen: true, url: regular, description: alt_description });
+  const handleImageClick = ({ urls: { regular }, alt_description }: UnsplashImage) => {
+    setModalParams({ isOpen: true, url: regular, description: alt_description || '' });
   };
 
   const handleModalClose = () => {
@@ -67,7 +66,7 @@ function App() {
 
   useEffect(() => {
     if (page === 1) return;
-    appRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    appRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [images, page]);
 
   return (
@@ -94,3 +93,4 @@ function App() {
 }
 
 export default App;
+
