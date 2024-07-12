@@ -46,21 +46,21 @@ function App() {
     getData();
   }, [searchQuery, page]);
 
-  const handleSearch = (newQuery: string) => {
-    setSearchQuery(newQuery);
-    setPage(1);
-    setImages([]);
-  };
+  const handleSearch = (newQuery: string): void => {
+  setSearchQuery(newQuery);
+  setPage(1);
+  setImages([]);
+};
 
-  const handleLoadMoreClick = () => {
+  const handleLoadMoreClick = (): void => {
     setPage(prevPage => prevPage + 1);
   };
 
-  const handleImageClick = ({ urls: { regular }, alt_description }: UnsplashImage) => {
+  const handleImageClick = ({ urls: { regular }, alt_description }: UnsplashImage): void => {
     setModalParams({ isOpen: true, url: regular, description: alt_description || '' });
   };
 
-  const handleModalClose = () => {
+  const handleModalClose = (): void => {
     setModalParams(initialModalParams);
   };
 
